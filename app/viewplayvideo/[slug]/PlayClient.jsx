@@ -1,13 +1,14 @@
 "use client";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { AdminContext } from "../../providers/AdminContext";
 import "./play.css";
 
 export default function PlayClient() {
   const { slug } = useParams();
-
+  const searchParams = useSearchParams();
+  const idFromQuery = searchParams?.get("id") || "";
   const {
     handleViewsCount,
     showResultData,
@@ -44,16 +45,20 @@ export default function PlayClient() {
     return anyNum ? parseInt(anyNum[1], 10) || 0 : 0;
   };
 
-  // Load video by resolving slug via search
+  // Load video: prefer direct id from query, otherwise resolve slug via search
   useEffect(() => {
     const resolveAndFetch = async () => {
       try {
-        const query = (slug || "").toString().replace(/-/g, " ");
-        const res = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=1`);
-        const json = await res.json();
-        const first = (json && json.data && json.data[0]) || null;
-        if (first && first._id) {
-          getbigVideo(first._id);
+        if (idFromQuery) {
+          await getbigVideo(idFromQuery);
+        } else {
+          const query = (slug || "").toString().replace(/-/g, " ");
+          const res = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=1`);
+          const json = await res.json();
+          const first = (json && json.data && json.data[0]) || null;
+          if (first && first._id) {
+            await getbigVideo(first._id);
+          }
         }
       } catch (_) {
         // ignore
@@ -63,7 +68,7 @@ export default function PlayClient() {
     };
     resolveAndFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+  }, [slug, idFromQuery]);
 
   const handleScrollToTop = () => {
     if (typeof window !== "undefined") {
