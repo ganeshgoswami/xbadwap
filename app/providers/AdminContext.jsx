@@ -25,7 +25,19 @@ export default function AuthAdminProvider({ children }) {
   const [searchCountry, setSearchCountry] = useState(null);
 
   // Prefer Next.js rewrites to backend; allow override via NEXT_PUBLIC_API_URL
-  const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? "/api", []);
+  const apiUrl = useMemo(() => {
+    const raw = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+    if (!raw) return "/api"; // use Next.js rewrite
+    // If custom base provided, ensure it ends with '/api' path segment
+    // Examples:
+    //  - https://api.badwap.fun -> https://api.badwap.fun/api
+    //  - https://api.badwap.fun/ -> https://api.badwap.fun/api
+    //  - https://api.badwap.fun/api -> keep
+    //  - https://api.badwap.fun/custom -> keep as-is (advanced)
+    const hasApiSegment = /\/api(\/?$|\/)/.test(raw);
+    if (hasApiSegment) return raw.replace(/\/$/, "");
+    return raw.replace(/\/$/, "") + "/api";
+  }, []);
 
   const router = useRouter();
   const pathname = usePathname();
