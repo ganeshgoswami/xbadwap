@@ -1,12 +1,14 @@
 "use client";
 import React, { useContext, useState } from "react";
-import { AdminContext } from "../../providers/AdminContext";
+import { AdminContext } from "../providers/AdminContext.jsx";
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function AddCollection() {
   const [imgUrl, setImgUrl] = useState("");
   const [titel, setTitel] = useState("");
   const [alt, setAlt] = useState("");
-  const [models, setModels] = useState("");
   const [category, setCategory] = useState("");
   const [videourl, setVideourl] = useState("");
   const [embedVideo, setEmbedVideo] = useState("");

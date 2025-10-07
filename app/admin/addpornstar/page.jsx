@@ -1,6 +1,9 @@
 "use client";
 import React, { useContext, useMemo, useState } from "react";
-import { AdminContext } from "@/app/providers/AdminContext";
+import { AdminContext } from "../providers/AdminContext";
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function AddPornStar() {
   const { getPornStars } = useContext(AdminContext);

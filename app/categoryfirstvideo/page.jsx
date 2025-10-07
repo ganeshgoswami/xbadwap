@@ -2,7 +2,10 @@
 import React, { useContext, useEffect } from "react";
 import Link from "next/link";
 import Head from "next/head";
-import { AdminContext } from "@/app/providers/AdminContext";
+import { AdminContext } from "../providers/AdminContext";
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function CategoryFirstVideoPage() {
   const { categoriesFirstData, allCategoriesFirstData, createSlug, handleViewsCount } = useContext(AdminContext);

@@ -4,6 +4,10 @@ import { usePathname } from 'next/navigation';
 import NavbarAdmin from './NavbarAdmin.jsx';
 import AdminGuard from './Guard.jsx';
 import { AdminContext } from "../providers/AdminContext";
+import { Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
@@ -30,7 +34,9 @@ export default function AdminLayout({ children }) {
           </div>
         )}
         <div className="container py-3">
-          {children}
+          <Suspense fallback={null}>
+            {children}
+          </Suspense>
         </div>
       </section>
     </AdminGuard>

@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import "./login.css";
 import { AdminContext } from "../../providers/AdminContext";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function LoginPage() {
   const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "/api";
   const { setAdmin } = useContext(AdminContext);

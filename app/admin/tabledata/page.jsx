@@ -1,7 +1,10 @@
 "use client";
 import React, { useContext, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AdminContext } from "@/app/providers/AdminContext";
+import { AdminContext } from "../../providers/AdminContext";
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function AdminTable() {
   const { alldata, deletedata, edit, getalldata, totalPages, currentPage } = useContext(AdminContext);

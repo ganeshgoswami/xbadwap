@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function AdminHub() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

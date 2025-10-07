@@ -1,4 +1,5 @@
 import './globals.css';
+import { Suspense } from 'react';
 import AuthAdminProvider from './providers/AdminContext.jsx';
 import PublicShell from './PublicShell.jsx';
 
@@ -26,11 +27,13 @@ export default function RootLayout({ children }) {
         {/* <link rel="apple-touch-icon" href="/apple-touch-icon.png" /> */}
       </head>
       <body style={{ fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial' }}>
-        <AuthAdminProvider>
-          <PublicShell>
-            {children}
-          </PublicShell>
-        </AuthAdminProvider>
+        <Suspense fallback={null}>
+          <AuthAdminProvider>
+            <PublicShell>
+              {children}
+            </PublicShell>
+          </AuthAdminProvider>
+        </Suspense>
         <script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
           defer
