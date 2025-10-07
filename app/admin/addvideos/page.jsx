@@ -3,7 +3,6 @@ import React, { useContext, useState } from "react";
 import { AdminContext } from "../../providers/AdminContext";
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default function AddCollection() {
   const [imgUrl, setImgUrl] = useState("");

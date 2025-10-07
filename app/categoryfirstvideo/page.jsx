@@ -5,7 +5,6 @@ import Head from "next/head";
 import { AdminContext } from "../providers/AdminContext";
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default function CategoryFirstVideoPage() {
   const { categoriesFirstData, allCategoriesFirstData, createSlug, handleViewsCount } = useContext(AdminContext);
