@@ -1,0 +1,26 @@
+.rotate-card {
+  max-width: 920px; /* wider card on desktop */
+  margin-inline: auto; /* center the card */
+}
+
+.text { color: white; text-shadow: 1px 5px 2px black, 0 0 5px orchid; }
+
+.login-page {
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .rotate-card { width: 90%; padding: 15px; }
+  .text { font-size: 1.5rem; }
+}
+
+@media (max-width: 576px) {
+  .rotate-card { width: 100%; padding: 10px; }
+  .btn-block { width: 100%; }
+  .text { font-size: 1.25rem; }
+}
