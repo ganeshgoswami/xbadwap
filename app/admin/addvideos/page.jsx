@@ -8,6 +8,7 @@ export default function AddCollection() {
   const [imgUrl, setImgUrl] = useState("");
   const [titel, setTitel] = useState("");
   const [alt, setAlt] = useState("");
+  const [models, setModels] = useState("");
   const [category, setCategory] = useState("");
   const [videourl, setVideourl] = useState("");
   const [embedVideo, setEmbedVideo] = useState("");
