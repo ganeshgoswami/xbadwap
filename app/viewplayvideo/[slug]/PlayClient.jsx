@@ -22,7 +22,13 @@ export default function PlayClient() {
   const [frameLoaded, setFrameLoaded] = useState(false);
 
   // API base (proxied by rewrites unless NEXT_PUBLIC_API_URL is set)
-  const apiBase = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? "/api", []);
+  const apiBase = useMemo(() => {
+    const raw = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+    if (!raw) return "/api"; // use Next.js rewrite locally or when unset
+    const hasApiSegment = /\/api(\/?$|\/)/.test(raw);
+    if (hasApiSegment) return raw.replace(/\/$/, "");
+    return raw.replace(/\/$/, "") + "/api";
+  }, []);
 
   // Helper: convert durations to minutes integer
   const getMinutes = (duration) => {

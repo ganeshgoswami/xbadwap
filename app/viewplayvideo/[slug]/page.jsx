@@ -4,10 +4,17 @@ export async function generateMetadata({ params, searchParams }) {
   const rawSlug = params?.slug ?? "";
   const query = decodeURIComponent(rawSlug).replace(/-/g, " ");
   const id = searchParams?.id ? String(searchParams.id) : undefined;
-  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? ""; // rely on rewrites if empty
+  // Normalize API base same as client: include '/api' exactly once
+  const apiBase = (() => {
+    const raw = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+    if (!raw) return "/api"; // use Next.js rewrites locally
+    const hasApiSegment = /\/api(\/?$|\/)/.test(raw);
+    if (hasApiSegment) return raw.replace(/\/$/, "");
+    return raw.replace(/\/$/, "") + "/api";
+  })();
   let first = null;
   try {
-    const res = await fetch(`${apiBase}/api/searchData?query=${encodeURIComponent(query)}&page=1`, { next: { revalidate: 300 } });
+    const res = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=1`, { next: { revalidate: 300 } });
     if (res.ok) {
       const json = await res.json();
       const list = (json && json.data) || [];
