@@ -81,9 +81,10 @@ export default function CategoryClient() {
                 key={vd._id || index}
               >
                 <Link
-                  href={{ pathname: `/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`, query: { id: vd._id } }}
+                  href={`/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`}
                   style={{ width: "92%", textDecoration: "none" }}
                   onClick={() => {
+                    try { if (typeof window !== 'undefined') sessionStorage.setItem('lastVideoId', String(vd._id)); } catch {}
                     handleViewsCount(vd._id);
                     handleScrollToTop();
                   }}

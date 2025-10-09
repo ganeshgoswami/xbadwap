@@ -1,14 +1,12 @@
 "use client";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { AdminContext } from "../../providers/AdminContext";
 import "./play.css";
 
 export default function PlayClient() {
   const { slug } = useParams();
-  const searchParams = useSearchParams();
-  const idFromQuery = searchParams?.get("id") || "";
   const {
     handleViewsCount,
     showResultData,
@@ -51,20 +49,69 @@ export default function PlayClient() {
     return anyNum ? parseInt(anyNum[1], 10) || 0 : 0;
   };
 
-  // Load video: prefer direct id from query, otherwise resolve slug via search
+  // Load video by slug: resolve slug to ID via search and then fetch the big video
   useEffect(() => {
     const resolveAndFetch = async () => {
       try {
-        if (idFromQuery) {
-          await getbigVideo(idFromQuery);
-        } else {
-          const query = (slug || "").toString().replace(/-/g, " ");
-          const res = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=1`);
-          const json = await res.json();
-          const first = (json && json.data && json.data[0]) || null;
-          if (first && first._id) {
-            await getbigVideo(first._id);
+        // 1) If we have an ID from session (set on click), use it directly
+        try {
+          if (typeof window !== "undefined") {
+            const lastId = sessionStorage.getItem("lastVideoId");
+            if (lastId) {
+              await getbigVideo(lastId);
+              sessionStorage.removeItem("lastVideoId");
+              return;
+            }
           }
+        } catch (_) {}
+
+        const rawSlug = (slug || "").toString();
+        const query = rawSlug.replace(/-/g, " ");
+        const slugify = (s = "") =>
+          s
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
+        // Try direct fetch by slug first
+        try {
+          const direct = await fetch(`${apiBase}/videoBySlug/${encodeURIComponent(rawSlug)}`);
+          if (direct.ok) {
+            const dj = await direct.json();
+            if (dj?.data?._id) {
+              await getbigVideo(dj.data._id);
+              return;
+            }
+          }
+        } catch (_) {
+          // ignore and fall back
+        }
+
+        // Fallback: search and iterate pages to find exact slug match
+        const res1 = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=1`);
+        const json1 = await res1.json();
+        let list = (json1 && json1.data) || [];
+        const totalPages = Number(json1?.totalPages || 1);
+        let found = list.find((v) => slugify(v?.Titel || "") === rawSlug) || null;
+
+        if (!found && totalPages > 1) {
+          for (let p = 2; p <= totalPages; p++) {
+            try {
+              const rsp = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=${p}`);
+              const js = await rsp.json();
+              const pageList = (js && js.data) || [];
+              found = pageList.find((v) => slugify(v?.Titel || "") === rawSlug) || null;
+              if (found) break;
+            } catch (_) {
+              // continue
+            }
+          }
+        }
+
+        const pick = found || list[0] || null;
+        if (pick && pick._id) {
+          await getbigVideo(pick._id);
         }
       } catch (_) {
         // ignore
@@ -74,7 +121,7 @@ export default function PlayClient() {
     };
     resolveAndFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, idFromQuery]);
+  }, [slug]);
 
   const handleScrollToTop = () => {
     if (typeof window !== "undefined") {
@@ -198,7 +245,7 @@ export default function PlayClient() {
                     key={index}
                   >
                     <Link
-                      href={{ pathname: `/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`, query: { id: vd._id } }}
+                      href={`/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`}
                       style={{ width: "92%", textDecoration: "none" }}
                       onClick={() => {
                         handleViewsCount(vd._id);

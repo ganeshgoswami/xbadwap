@@ -27,7 +27,7 @@ export default function CategoryFirstVideoPage() {
           {(categoriesFirstData || []).map((vd, idx) => (
             <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex flex-column align-items-center" key={vd._id || idx}>
               <Link
-                href={{ pathname: `/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`, query: { id: vd._id } }}
+                href={`/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`}
                 className="text-decoration-none w-100"
                 onClick={() => handleViewsCount?.(vd._id)}
               >

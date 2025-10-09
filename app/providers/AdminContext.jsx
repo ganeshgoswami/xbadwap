@@ -279,7 +279,15 @@ export default function AuthAdminProvider({ children }) {
     }
   };
 
-  const createSlug = (text) => (text ? text.replace(/\s+/g, "-") : text);
+  const createSlug = (text) => {
+    if (!text) return text;
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+  };
 
   // Effects
   useEffect(() => {

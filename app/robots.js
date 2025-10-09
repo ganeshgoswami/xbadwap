@@ -17,5 +17,6 @@ export default function robots() {
         ],
       },
     ],
+    sitemap: 'https://xbadwap.com/sitemap.xml',
   };
 }

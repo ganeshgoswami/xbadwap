@@ -137,9 +137,10 @@ export default function HomeClient() {
             alldata.map((vd, index) => (
               <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex flex-column align-items-center p-0" key={index}>
                 <Link
-                  href={{ pathname: `/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`, query: { id: vd._id } }}
+                  href={`/viewplayvideo/${createSlug(vd.Titel?.toLowerCase())}`}
                   style={{ width: "92%", textDecoration: "none" }}
                   onClick={() => {
+                    try { if (typeof window !== 'undefined') sessionStorage.setItem('lastVideoId', String(vd._id)); } catch {}
                     handleViewsCount(vd._id);
                     handleScrollToTop();
                   }}

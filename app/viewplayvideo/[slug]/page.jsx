@@ -14,20 +14,29 @@ export async function generateMetadata({ params, searchParams }) {
   })();
   let first = null;
   try {
-    const res = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=1`, { next: { revalidate: 300 } });
-    if (res.ok) {
-      const json = await res.json();
-      const list = (json && json.data) || [];
-      if (id) {
-        first = list.find((v) => String(v?._id) === id) || list[0] || null;
-      } else {
-        const slugify = (s = "") => s
-          .toString()
-          .toLowerCase()
-          .trim()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
-        first = list.find((v) => slugify(v?.Titel || "") === rawSlug) || list[0] || null;
+    // Try direct by slug first
+    const direct = await fetch(`${apiBase}/videoBySlug/${encodeURIComponent(rawSlug)}`, { next: { revalidate: 300 } });
+    if (direct.ok) {
+      const dj = await direct.json();
+      first = dj?.data || null;
+    }
+    // Fallback to search if not found
+    if (!first) {
+      const res = await fetch(`${apiBase}/searchData?query=${encodeURIComponent(query)}&page=1`, { next: { revalidate: 300 } });
+      if (res.ok) {
+        const json = await res.json();
+        const list = (json && json.data) || [];
+        if (id) {
+          first = list.find((v) => String(v?._id) === id) || list[0] || null;
+        } else {
+          const slugify = (s = "") => s
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
+          first = list.find((v) => slugify(v?.Titel || "") === rawSlug) || list[0] || null;
+        }
       }
     }
   } catch (_) {}
@@ -48,7 +57,9 @@ export async function generateMetadata({ params, searchParams }) {
     `${modelDisplay} wwwxxx`,
     `${modelDisplay} blue film`,
   ];
-  const canonical = `/viewplayvideo/${rawSlug}`;
+  const canonical = id
+    ? `/viewplayvideo/${rawSlug}?id=${encodeURIComponent(id)}`
+    : `/viewplayvideo/${rawSlug}`;
 
   return {
     title,
